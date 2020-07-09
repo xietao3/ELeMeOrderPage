@@ -451,7 +451,7 @@
 				TargetAttributes = {
 					4D224B551F175574000F2885 = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = V275FY2C2G;
+						DevelopmentTeam = CVQ4KC2R64;
 						ProvisioningStyle = Automatic;
 					};
 					4D224B6E1F175574000F2885 = {
@@ -473,6 +473,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -703,10 +704,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = V275FY2C2G;
+				DEVELOPMENT_TEAM = CVQ4KC2R64;
 				INFOPLIST_FILE = ELeMeOrderPage/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.liyifang.WanBa.ELeMeOrderPage;
+				PRODUCT_BUNDLE_IDENTIFIER = com.xietao3.WanBa.ELeMeOrderPage;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -715,10 +716,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = V275FY2C2G;
+				DEVELOPMENT_TEAM = CVQ4KC2R64;
 				INFOPLIST_FILE = ELeMeOrderPage/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.liyifang.WanBa.ELeMeOrderPage;
+				PRODUCT_BUNDLE_IDENTIFIER = com.xietao3.WanBa.ELeMeOrderPage;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -792,6 +793,7 @@
 				4D224B851F175574000F2885 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		4D224B861F175574000F2885 /* Build configuration list for PBXNativeTarget "ELeMeOrderPageTests" */ = {
 			isa = XCConfigurationList;
@@ -800,6 +802,7 @@
 				4D224B881F175574000F2885 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		4D224B891F175574000F2885 /* Build configuration list for PBXNativeTarget "ELeMeOrderPageUITests" */ = {
 			isa = XCConfigurationList;
@@ -808,6 +811,7 @@
 				4D224B8B1F175574000F2885 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

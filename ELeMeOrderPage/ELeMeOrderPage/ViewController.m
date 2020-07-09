@@ -20,8 +20,7 @@
 }
 - (IBAction)clickButton:(id)sender {
     ELeMeOrderPageViewMainController *rootVC = [[ELeMeOrderPageViewMainController alloc]init];
-    UINavigationController *NAVC = [[UINavigationController alloc]initWithRootViewController:rootVC];
-    [self presentViewController:NAVC animated:YES completion:nil];
+    [self.navigationController pushViewController:rootVC animated:YES];
 }
 
 

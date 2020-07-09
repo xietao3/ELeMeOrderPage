@@ -37,7 +37,6 @@
    __weak __typeof(self) weekSelf = self;
     [self.view addSubview:self.leftTableView];
     [self.view addSubview:self.rightTableView];
-    self.leftTableView.backgroundColor = [UIColor greenColor];
     [self.leftTableView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(0);
         make.bottom.mas_equalTo(0);
@@ -58,7 +57,7 @@
         _rightTableView = [[LWGesturePenetrationTableView alloc]init];
         _rightTableView.delegate = self;
         _rightTableView.dataSource = self;
-        
+        _rightTableView.showsVerticalScrollIndicator = NO;
         [_rightTableView registerClass:[ELeMeOrderPageLeftVCRightCell class] forCellReuseIdentifier:@"cell2"];
     }
     return _rightTableView;

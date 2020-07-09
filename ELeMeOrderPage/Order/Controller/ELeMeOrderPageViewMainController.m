@@ -7,8 +7,12 @@
 //
 
 #import "ELeMeOrderPageViewMainController.h"
+#import "Masonry.h"
 
 #define TableHeaderViewH  200
+#define kNavBarHeight 88
+
+static CGFloat const kTakeoutDetailStickViewHeight = 45;
 
 //子视图
 #import "ELeMeOrderPageLevelListView.h"
@@ -18,119 +22,94 @@
 
 #import "OrderFoodModel.h"
 @interface ELeMeOrderPageViewMainController ()<UITableViewDelegate,UITableViewDataSource,ELeMeOrderPageLevelListViewDelegate>
+
 @property(nonatomic, strong)UITableView *mainTableView;//主tableView
 @property(nonatomic, strong)UIScrollView *subScrollView;//添加到cell的滚动视图 实现 “点菜” “商家滑动切换”
 @property(nonatomic, strong)ELeMeOrderPageLeftViewController *subLeftVC;//点菜控制器
 @property(nonatomic, strong)ELeMeOrderPageRightViewController *subRightVC;//商家控制器
 @property(nonatomic, strong)ELeMeOrderPageLevelListView *levelListView;//section头视图
-@property(nonatomic, strong)OrderFoodModel *foodModel;
+@property(nonatomic, strong) OrderFoodModel *foodModel;
+@property (nonatomic, assign) CGFloat mainTableViewOldOffSet;
+
 @end
 
 @implementation ELeMeOrderPageViewMainController
-{
-    CGFloat _mainTableViewOldOffSet;
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    [self initial];
 }
 
--(void)viewDidLoad
-{
-    [super viewDidLoad];
-    self.view.backgroundColor = [UIColor yellowColor];
-    [self putTogetheraddSubViews];
+- (void)initial {
+    // 初始化 UI
+    
+    // 主列表
+    [self initMainTableView];
+    [self initSubScrollView];
+
+    // 解析数据
+
     NSString *dataPath = [[NSBundle mainBundle] pathForResource:@"OrderShamData" ofType:@"plist"];
     NSArray *dataArr = [NSArray arrayWithContentsOfFile:dataPath];
     self.foodModel = [[OrderFoodModel alloc]init];
-   
     [_foodModel getMenuTypesModelFromDataArr:dataArr];
-     NSLog(@"%@",self.foodModel.menuTypesModelArr);
     self.subLeftVC.orderFoodModel = _foodModel;
-    
+    [_mainTableView reloadData];
 }
-#pragma mark - UI设置
-/**
- 组装视图 
- */
--(void)putTogetheraddSubViews
-{
-    self.view.backgroundColor = [UIColor yellowColor];
+
+- (void)initMainTableView {
+    _mainTableView = [[UITableView alloc]initWithFrame:self.view.frame style:UITableViewStylePlain];
+    _mainTableView.showsVerticalScrollIndicator = NO;
+    _mainTableView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
+    //设置代理
+    _mainTableView.delegate = self;
+    _mainTableView.dataSource = self;
+    //设置头视图
+    UIView *headerView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, ScreenWidth, TableHeaderViewH)];
+    headerView.backgroundColor = [UIColor brownColor];
+    _mainTableView.tableHeaderView = headerView;
+
     [self.view addSubview:self.mainTableView];
+    [_mainTableView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(kNavBarHeight);
+        make.leading.trailing.bottom.mas_equalTo(0);
+    }];
+
 }
 
-/**
- UI懒加载
- */
--(UITableView *)mainTableView
-{
-    if (!_mainTableView) {
-        CGRect frame = self.view.bounds;
-        frame.origin.y = 64;
-        frame.size.height -= 64;
-        _mainTableView.frame = frame;
-        _mainTableView = [[UITableView alloc]initWithFrame:self.view.bounds style:UITableViewStylePlain];
-        _mainTableView.backgroundColor = [UIColor clearColor];
-        _mainTableView.showsVerticalScrollIndicator = NO;
-        //设置代理
-        _mainTableView.delegate = self;
-        _mainTableView.dataSource = self;
-        //设置头视图
-        _mainTableView.tableHeaderView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, ScreenWidth, TableHeaderViewH)];
-        _mainTableView.tableHeaderView.backgroundColor =  [UIColor clearColor];
-        
-    }
-    return _mainTableView;
-}
-
--(UIScrollView *)subScrollView
-{
+- (void)initSubScrollView {
     
-    if (!_subScrollView) {
-        CGRect frame = self.view.bounds;
-        frame.origin.y = 0;
-        frame.size.height -= 109;
-        _subScrollView = [[UIScrollView alloc]initWithFrame:frame];
-        _subScrollView.contentSize = CGSizeMake(ScreenWidth*2, frame.size.height);
-        _subScrollView.backgroundColor = [UIColor grayColor];
-        _subScrollView.pagingEnabled = YES;
-        _subScrollView.delegate = self;
-        _subScrollView.bounces = NO;
-        [_subScrollView addSubview:self.subLeftVC.view];
-        [_subScrollView addSubview:self.subRightVC.view];
-        self.subLeftVC.view.backgroundColor = [UIColor redColor];
-        self.subRightVC.view.backgroundColor = [UIColor blueColor];
+    CGRect frame = self.view.bounds;
+    frame.origin.y = 0;
+    frame.size.height -= kNavBarHeight+kTakeoutDetailStickViewHeight;
+    _subScrollView = [[UIScrollView alloc]initWithFrame:frame];
+    _subScrollView.contentSize = CGSizeMake(ScreenWidth*2, frame.size.height);
+    _subScrollView.pagingEnabled = YES;
+    _subScrollView.delegate = self;
+    _subScrollView.bounces = NO;
+    
+    [self initSubLeftVC];
+    [self initSubRightVC];
 
-    }
-    return _subScrollView;
+
 }
 
--(ELeMeOrderPageLevelListView *)levelListView
-{
-    if (!_levelListView) {
-        _levelListView = [[ELeMeOrderPageLevelListView alloc]initWithFrame:CGRectMake(0, 0, ScreenWidth, 45)];
-        _levelListView.delegate = self;
-    }
-    return _levelListView;
+- (void)initSubLeftVC {
+    _subLeftVC = [[ELeMeOrderPageLeftViewController alloc]init];
+    _subLeftVC.view.frame = self.subScrollView.bounds;
+    [self addChildViewController:_subLeftVC];
+    [_subScrollView addSubview:self.subLeftVC.view];
+
 }
 
--(ELeMeOrderPageLeftViewController *)subLeftVC
-{
-    if (!_subLeftVC) {
-        _subLeftVC = [[ELeMeOrderPageLeftViewController alloc]init];
-        _subLeftVC.view.frame = self.subScrollView.bounds;
-        [self addChildViewController:_subLeftVC];
-        
-    }
-    return _subLeftVC;
-}
+- (void)initSubRightVC {
+    CGRect frame = self.subScrollView.bounds;
+    frame.origin.x = ScreenWidth;
+    _subRightVC = [[ELeMeOrderPageRightViewController alloc]init];
+      _subRightVC.view.frame =frame;
+    [self addChildViewController:_subRightVC];
+    [_subScrollView addSubview:self.subRightVC.view];
 
--(ELeMeOrderPageRightViewController *)subRightVC
-{
-    if (!_subRightVC) {
-        CGRect frame = self.subScrollView.bounds;
-        frame.origin.x = ScreenWidth;
-        _subRightVC = [[ELeMeOrderPageRightViewController alloc]init];
-          _subRightVC.view.frame =frame;
-        [self addChildViewController:_subRightVC];
-    }
-    return _subRightVC;
 }
 
 #pragma mark - delegate实现
@@ -138,24 +117,63 @@
 /**
  ELeMeOrderPageLevelListViewDelegate
  */
--(void)selectedButton:(BOOL)isLeftButton
-{
+- (void)selectedButton:(BOOL)isLeftButton {
     CGPoint offSet = _subScrollView.contentOffset;
-    
-    
     offSet.x = isLeftButton ? 0 : ScreenWidth;
-    
     [_subScrollView setContentOffset:offSet animated:YES];
 }
-/**
- UIScrollViewDelegate
- */
 
+
+#pragma mark - UITableViewDataSource
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    NSInteger sectionNum = 1;
+    return sectionNum;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    NSInteger rowNum = 1;
+    
+    return rowNum;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    [self.subScrollView removeFromSuperview];
+    UITableViewCell *cell = [[UITableViewCell alloc]init];
+    
+    [cell.contentView addSubview:self.subScrollView];
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    return cell;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    CGFloat rowHeight = self.subScrollView.bounds.size.height;
+    return rowHeight;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    return kTakeoutDetailStickViewHeight;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
+    return 0;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+    if (!_levelListView) {
+        _levelListView = [[ELeMeOrderPageLevelListView alloc]initWithFrame:CGRectMake(0, 0, ScreenWidth, kTakeoutDetailStickViewHeight)];
+        _levelListView.delegate = self;
+    }
+    return _levelListView;
+}
+
+
+
+#pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     
     if ([scrollView isEqual:self.mainTableView]) {
-//        
+//
 //        NSLog(@"%lf, %lf", scrollView.contentOffset.y, scrollView.contentSize.height-scrollView.bounds.size.height);
         
         if (scrollView.contentOffset.y >= (scrollView.contentSize.height-scrollView.bounds.size.height-0.5)) {//mainTableView 滚动不能超过最大值
@@ -190,56 +208,5 @@
     
 }
 
-/**
- UITableViewDataSource
- */
--(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    NSInteger sectionNum = 1;
-    return sectionNum;
-}
--(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    NSInteger rowNum = 1;
-    
-    return rowNum;
-}
-
--(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    [self.subScrollView removeFromSuperview];
-    UITableViewCell *cell = [[UITableViewCell alloc]init];
-    
-    [cell.contentView addSubview:self.subScrollView];
-    cell.backgroundColor = [UIColor whiteColor];
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    return cell;
-}
-/**
- UITableViewDelegate
- */
--(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    CGFloat rowHeight = self.subScrollView.bounds.size.height;
-    return rowHeight;
-}
-
-//分区头高度
--(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
-{
-    CGFloat headerHeight = self.levelListView.bounds.size.height;
-    return headerHeight;
-}
-//分区脚高度
--(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
-{
-    CGFloat footerHeight;
-    return footerHeight;
-}
-
--(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
-{
-    return self.levelListView;
-}
 
 @end
