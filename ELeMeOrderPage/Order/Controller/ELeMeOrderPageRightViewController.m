@@ -20,11 +20,10 @@
 -(void)viewDidLoad
 {
     [super viewDidLoad];
-    [self addSubViews];
+    [self initial];
 }
-//添加子视图
--(void)addSubViews
-{
+
+- (void)initial {
     _tableView = [[LWGesturePenetrationTableView alloc]initWithFrame:self.view.bounds style:UITableViewStylePlain];
     [self.view addSubview:_tableView];
     //设置代理
@@ -32,42 +31,19 @@
     _tableView.dataSource = self;
     
     [_tableView registerClass:[ELeMeOrderPageRightVCCommentCell class] forCellReuseIdentifier:@"commentCell"];
-   
 }
 
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    
-    ELeMeOrderPageViewMainController *vc = (ELeMeOrderPageViewMainController *)[self parentViewController];//父控制器
-    
-    if (scrollView.contentOffset.y <= 0) {
-        self.offsetType = OffsetTypeMin;
-        scrollView.contentOffset = CGPointZero;
-    } else {
-        self.offsetType = OffsetTypeCenter;
-    }
-    
-    
-    if (vc.offsetType != OffsetTypeMax) {
-        scrollView.contentOffset = CGPointZero;
-    }
-    if (vc.offsetType == OffsetTypeMax) {
-        
-    }
-    
-}
 
 
-//UITableViewDelegate, UITableViewDataSource
-//section数
--(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
+
+#pragma mark - UITableViewDataSource
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     NSInteger sectionNum = 2;
     return sectionNum;
 }
-//row数
--(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     NSInteger rowNum = 0;
     switch (section) {
         case 0:
@@ -81,9 +57,43 @@
     }
     return rowNum;
 }
-//tableViewCell
--(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    CGFloat rowHeight;
+    if (indexPath.section==0) {
+        switch (indexPath.row) {
+            case 0:
+                rowHeight = 90;
+                break;
+            case 1:
+                rowHeight = UITableViewAutomaticDimension;
+                break;
+            case 2:
+                rowHeight = 40;
+                break;
+            case 3:
+                rowHeight = 40;
+                break;
+            case 4:
+                rowHeight = 200*320/ScreenWidth;
+                break;
+                
+            default:
+                rowHeight = 100;
+                break;
+        }
+        
+        
+    }
+    else
+    {
+        rowHeight = 100;
+    }
+    return rowHeight;
+}
+
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
      OrderFoodShopInfoModel *shopInfoModel =  _orderFoodModel.shopInfoModel;
     if (indexPath.section==0) {
@@ -137,11 +147,6 @@
             }
             
             return commonCell;
-//            OrderFoodSellerBaiDuMapCell *mapCell = [[OrderFoodSellerBaiDuMapCell alloc]initWithFrame:CGRectMake(0, 0, screenWidth, 200*320/screenWidth)];
-//            
-//            CLLocationCoordinate2D  coordinate = CLLocationCoordinate2DMake(shopInfoModel.lat, shopInfoModel.lng);
-//            mapCell.annotationCoordinate = coordinate;
-//            return mapCell;
         }
         
     }
@@ -157,53 +162,24 @@
         
     }
 }
-//row高度
--(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    CGFloat rowHeight;
-    if (indexPath.section==0) {
-        switch (indexPath.row) {
-            case 0:
-                rowHeight = 90;
-                break;
-            case 1:
-                rowHeight = UITableViewAutomaticDimension;
-                break;
-            case 2:
-                rowHeight = 40;
-                break;
-            case 3:
-                rowHeight = 40;
-                break;
-            case 4:
-                rowHeight = 200*320/ScreenWidth;
-                break;
-                
-            default:
-                rowHeight = 100;
-                break;
-        }
-        
-        
-    }
-    else
-    {
-        rowHeight = 100;
-    }
-    return rowHeight;
-}
 
-//分区头高度
--(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
-{
-    CGFloat headerHeight;
-    return headerHeight;
-}
-//分区脚高度
--(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
-{
-    CGFloat footerHeight;
-    return footerHeight;
+#pragma mark - UIScrollViewDelegate
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    
+    ELeMeOrderPageViewMainController *vc = (ELeMeOrderPageViewMainController *)[self parentViewController];//父控制器
+    NSLog(@"%f",scrollView.contentOffset.y);
+    if (scrollView.contentOffset.y <= 0) {
+        self.scrollOffset = ScrollOffsetZero;
+        scrollView.contentOffset = CGPointZero;
+    } else {
+        self.scrollOffset = ScrollOffsetOther;
+    }
+    
+    // 主视图 header 未全部隐藏时  offset 一直为 0
+    if (vc.scrollOffset != ScrollOffsetGreaterThanHeader) {
+        scrollView.contentOffset = CGPointZero;
+    }
+    
 }
 
 

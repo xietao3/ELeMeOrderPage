@@ -9,11 +9,9 @@
 #import "LWGesturePenetrationTableView.h"
 
 @implementation LWGesturePenetrationTableView
-#pragma mark --- other ---
 
-#pragma mark --- other ---
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(nonnull UIGestureRecognizer *)otherGestureRecognizer
-{
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(nonnull UIGestureRecognizer *)otherGestureRecognizer {
     return YES;
 }
+
 @end

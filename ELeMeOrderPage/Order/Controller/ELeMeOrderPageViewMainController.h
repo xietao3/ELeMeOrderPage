@@ -12,5 +12,5 @@
 @interface ELeMeOrderPageViewMainController : UIViewController
 @property (nonatomic, strong, readonly) UITableView *mainTableView;
 
-@property (nonatomic, assign) OffsetType offsetType;
+@property (nonatomic, assign) ScrollOffset scrollOffset;
 @end

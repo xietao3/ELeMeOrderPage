@@ -19,5 +19,9 @@
 @property(nonatomic, strong)UIButton *rightButton;
 @property(nonatomic, weak)id<ELeMeOrderPageLevelListViewDelegate>delegate;
 @property(nonatomic, assign)NSInteger selectedIndex;
--(void)changeLineViewOffsetX:(CGFloat)offsetX;
+@property (nonatomic, copy) void(^segmentIndexDidChangeBlock)(NSInteger index);
+
+- (void)changeLineViewOffsetX:(CGFloat)offsetX;
+
+
 @end

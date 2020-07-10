@@ -93,13 +93,12 @@
     
     ELeMeOrderPageViewMainController *vc = (ELeMeOrderPageViewMainController *)[self parentViewController];//父控制器
     
-    NSLog(@"aaaaaaaaaaaaaa=====%f",scrollView.contentOffset.y);
     if (scrollView==self.rightTableView&&!_didSelectLeftTVCell) {
         if (scrollView.contentOffset.y <= 0) {//rightTableView不能小于最小值（不能下滑的条件）
-            self.offsetType = OffsetTypeMin;
+            self.scrollOffset = ScrollOffsetZero;
             scrollView.contentOffset =CGPointZero;
         } else {
-            self.offsetType = OffsetTypeCenter;
+            self.scrollOffset = ScrollOffsetOther;
         }
         
         
@@ -116,14 +115,13 @@
         }
 
         
-        if (vc.offsetType != OffsetTypeMax&&_rightTVScrollUp) {//vc.offsetType!= OffsetTypeMax  时rightTableView不能向上滑动（不能上滑的条件）
+        if (vc.scrollOffset != ScrollOffsetGreaterThanHeader&&_rightTVScrollUp) {//vc.offsetType!= OffsetTypeMax  时rightTableView不能向上滑动（不能上滑的条件）
             scrollView.contentOffset = CGPointMake(0, _oldRightOffsetY);
         }
-        if (vc.offsetType == OffsetTypeMax) {
+        if (vc.scrollOffset == ScrollOffsetGreaterThanHeader) {
             
         }
         
-                NSLog(@"ccccccccccc=====%f",scrollView.contentOffset.y);
         _oldRightOffsetY = floorf(scrollView.contentOffset.y);
     }
     
@@ -168,7 +166,6 @@
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    __weak __typeof(self) weekSelf = self;
     if (tableView==self.leftTableView) {
        OrderFoodMenuTypeModel *menuType = self.orderFoodModel.menuTypesModelArr[indexPath.row];
        ELeMeOrderPageLeftVCLeftCell *leftCell = [tableView dequeueReusableCellWithIdentifier:@"cell1" forIndexPath:indexPath];

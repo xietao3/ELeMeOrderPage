@@ -11,7 +11,7 @@
 #import "OrderFoodModel.h"
 @interface ELeMeOrderPageLeftViewController : UIViewController
 @property(nonatomic, strong,readonly)LWGesturePenetrationTableView *rightTableView;
-@property (nonatomic, assign) OffsetType offsetType;
+@property (nonatomic, assign) ScrollOffset scrollOffset;
 @property (nonatomic, strong)OrderFoodModel *orderFoodModel;
 @property(nonatomic, assign) BOOL rightTVScrollDown;
 @end

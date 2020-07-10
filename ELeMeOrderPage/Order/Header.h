@@ -15,10 +15,10 @@
 
 
 //tableview偏移类型
-typedef NS_ENUM(NSInteger, OffsetType) {
-    OffsetTypeMin,
-    OffsetTypeCenter,
-    OffsetTypeMax,
+typedef NS_ENUM(NSInteger, ScrollOffset) {
+    ScrollOffsetZero,
+    ScrollOffsetGreaterThanHeader,
+    ScrollOffsetOther,
 };
 //颜色
 #define UIColor_fe4900 [UIColor colorWithHexString:@"#fe4900"]

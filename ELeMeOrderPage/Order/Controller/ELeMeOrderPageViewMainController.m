@@ -9,10 +9,10 @@
 #import "ELeMeOrderPageViewMainController.h"
 #import "Masonry.h"
 
-#define TableHeaderViewH  200
 #define kNavBarHeight 88
 
 static CGFloat const kTakeoutDetailStickViewHeight = 45;
+static CGFloat const kTakeoutDetailHeaderViewHeight = 200;
 
 //子视图
 #import "ELeMeOrderPageLevelListView.h"
@@ -23,11 +23,11 @@ static CGFloat const kTakeoutDetailStickViewHeight = 45;
 #import "OrderFoodModel.h"
 @interface ELeMeOrderPageViewMainController ()<UITableViewDelegate,UITableViewDataSource,ELeMeOrderPageLevelListViewDelegate>
 
-@property(nonatomic, strong)UITableView *mainTableView;//主tableView
-@property(nonatomic, strong)UIScrollView *subScrollView;//添加到cell的滚动视图 实现 “点菜” “商家滑动切换”
-@property(nonatomic, strong)ELeMeOrderPageLeftViewController *subLeftVC;//点菜控制器
-@property(nonatomic, strong)ELeMeOrderPageRightViewController *subRightVC;//商家控制器
-@property(nonatomic, strong)ELeMeOrderPageLevelListView *levelListView;//section头视图
+@property(nonatomic, strong)UITableView *mainTableView; // 主 tableView
+@property(nonatomic, strong)UIScrollView *subScrollView; // 添加到cell的滚动视图 实现 “点菜” “商家滑动切换”
+@property(nonatomic, strong)ELeMeOrderPageLeftViewController *subLeftVC; // 点菜控制器
+@property(nonatomic, strong)ELeMeOrderPageRightViewController *subRightVC; // 商家控制器
+@property(nonatomic, strong)ELeMeOrderPageLevelListView *levelListView; // section头视图
 @property(nonatomic, strong) OrderFoodModel *foodModel;
 @property (nonatomic, assign) CGFloat mainTableViewOldOffSet;
 
@@ -65,7 +65,7 @@ static CGFloat const kTakeoutDetailStickViewHeight = 45;
     _mainTableView.delegate = self;
     _mainTableView.dataSource = self;
     //设置头视图
-    UIView *headerView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, ScreenWidth, TableHeaderViewH)];
+    UIView *headerView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, ScreenWidth, kTakeoutDetailHeaderViewHeight)];
     headerView.backgroundColor = [UIColor brownColor];
     _mainTableView.tableHeaderView = headerView;
 
@@ -112,18 +112,6 @@ static CGFloat const kTakeoutDetailStickViewHeight = 45;
 
 }
 
-#pragma mark - delegate实现
-
-/**
- ELeMeOrderPageLevelListViewDelegate
- */
-- (void)selectedButton:(BOOL)isLeftButton {
-    CGPoint offSet = _subScrollView.contentOffset;
-    offSet.x = isLeftButton ? 0 : ScreenWidth;
-    [_subScrollView setContentOffset:offSet animated:YES];
-}
-
-
 #pragma mark - UITableViewDataSource
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     NSInteger sectionNum = 1;
@@ -159,9 +147,14 @@ static CGFloat const kTakeoutDetailStickViewHeight = 45;
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+    __weak typeof (self) weakSelf = self;
     if (!_levelListView) {
         _levelListView = [[ELeMeOrderPageLevelListView alloc]initWithFrame:CGRectMake(0, 0, ScreenWidth, kTakeoutDetailStickViewHeight)];
-        _levelListView.delegate = self;
+        _levelListView.segmentIndexDidChangeBlock = ^(NSInteger index) {
+            CGPoint offSet = weakSelf.subScrollView.contentOffset;
+            offSet.x = index*ScreenWidth;
+            [weakSelf.subScrollView setContentOffset:offSet animated:YES];
+        };
     }
     return _levelListView;
 }
@@ -173,27 +166,27 @@ static CGFloat const kTakeoutDetailStickViewHeight = 45;
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     
     if ([scrollView isEqual:self.mainTableView]) {
-//
-//        NSLog(@"%lf, %lf", scrollView.contentOffset.y, scrollView.contentSize.height-scrollView.bounds.size.height);
-        
-        if (scrollView.contentOffset.y >= (scrollView.contentSize.height-scrollView.bounds.size.height-0.5)) {//mainTableView 滚动不能超过最大值
-            self.offsetType = OffsetTypeMax;
-            scrollView.contentOffset = CGPointMake(scrollView.contentOffset.x, scrollView.contentSize.height-scrollView.bounds.size.height);//(scrollView.contentSize.height-scrollView.bounds.size.height):mainTableView 可以滚动的最大偏移距离 超过等于最大偏移距离 不可以再向上滑动
-             _mainTableViewOldOffSet = scrollView.contentSize.height-scrollView.bounds.size.height;
+        // scrollView contentOffset 位置变化
+        if (scrollView.contentOffset.y >= (kTakeoutDetailHeaderViewHeight-0.5)) {
+            // mainTableView 滚动不能超过 header 高度
+            self.scrollOffset = ScrollOffsetGreaterThanHeader;
+            scrollView.contentOffset = CGPointMake(scrollView.contentOffset.x, kTakeoutDetailHeaderViewHeight);
+             _mainTableViewOldOffSet = kTakeoutDetailHeaderViewHeight;
         } else if (scrollView.contentOffset.y <= 0) {
-            self.offsetType = OffsetTypeMin;
+            self.scrollOffset = ScrollOffsetZero;
         } else {
-            self.offsetType = OffsetTypeCenter;
+            self.scrollOffset = ScrollOffsetOther;
         }
-        
        
-       
-        if ((self.levelListView.selectedIndex == 0 && self.subLeftVC.offsetType != OffsetTypeMin)&&(self.subLeftVC.rightTVScrollDown||(scrollView.contentOffset.y-_mainTableViewOldOffSet<0))) {//self.subLeftVC.offsetType != OffsetTypeMin时_mainTableView不能向下滑动（注释：当点菜页面显示并且商品列表tableView未达到最大偏移量之前，mainTableView不能向下滑动 ）
+        // self.subLeftVC.offsetType != OffsetTypeMin时_mainTableView不能向下滑动（注释：当点菜页面显示并且商品列表tableView未达到最大偏移量之前，mainTableView不能向下滑动 ）
+        if ((self.levelListView.selectedIndex == 0 && self.subLeftVC.scrollOffset != ScrollOffsetZero)&&
+            (self.subLeftVC.rightTVScrollDown || (scrollView.contentOffset.y - _mainTableViewOldOffSet<0))) {
+            
             scrollView.contentOffset = CGPointMake(scrollView.contentOffset.x, _mainTableViewOldOffSet);
         }
         
-      
-        if (self.levelListView.selectedIndex == 1 &&self.subRightVC.offsetType != OffsetTypeMin) {//当商家页面显示时，商家信息tableview偏移量不是最小状态 说明mainTableView 已经滚动到了最大值 在商家信息tableview偏移量未达到最小偏移量之前  mainTableView需要保持原来的偏移量不变
+      // 当商家页面显示时，商家信息tableview偏移量不是最小状态 说明 mainTableView 已经滚动到了最大值 在商家信息tableview偏移量未达到最小偏移量之前  mainTableView需要保持原来的偏移量不变
+        if (self.levelListView.selectedIndex == 1 && self.subRightVC.scrollOffset != ScrollOffsetZero) {
             scrollView.contentOffset = CGPointMake(scrollView.contentOffset.x, _mainTableViewOldOffSet);
         }
         
@@ -201,6 +194,7 @@ static CGFloat const kTakeoutDetailStickViewHeight = 45;
         
     }
     
+    // 滑动切换 stickerView 逻辑
     if ([scrollView isEqual:self.subScrollView]) {
         [self.levelListView changeLineViewOffsetX:self.subScrollView.contentOffset.x];
     }

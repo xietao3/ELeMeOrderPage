@@ -7,7 +7,6 @@
 //
 
 #import "ELeMeOrderPageLevelListView.h"
-
 #import "Header.h"
 
 typedef  NS_ENUM(NSInteger,ButtonTag)
@@ -25,8 +24,7 @@ typedef  NS_ENUM(NSInteger,ButtonTag)
     BOOL _isClickButton;
 }
 
--(instancetype)initWithFrame:(CGRect)frame
-{
+- (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
         self.backgroundColor = [UIColor whiteColor];
@@ -34,8 +32,8 @@ typedef  NS_ENUM(NSInteger,ButtonTag)
     }
     return self;
 }
--(void)createSubView
-{
+
+- (void)createSubView {
     
     CGFloat width = 80;
     CGFloat x = self.bounds.size.width/4-width/2;
@@ -83,21 +81,14 @@ typedef  NS_ENUM(NSInteger,ButtonTag)
     
 }
 
--(void)clickButton:(UIButton *)sender
-{
-  
-    BOOL isLeftButton =  _leftButton==sender  ? YES : NO;//判断点击的是否是LeftButton
-    
-    if (self.delegate&&[self.delegate respondsToSelector:@selector(selectedButton:)]) {
-        [self.delegate selectedButton:isLeftButton];
+- (void)clickButton:(UIButton *)sender {
+    if (_segmentIndexDidChangeBlock) {
+        _segmentIndexDidChangeBlock(_leftButton==sender?0:1);
     }
-    ;
-//    [self changeLineViewFrame];
 }
 
 
--(void)changeLineViewOffsetX:(CGFloat)offsetX
-{
+- (void)changeLineViewOffsetX:(CGFloat)offsetX {
     CGFloat width = 80;
     CGRect linViewFrame = _lineView.frame;
     CGFloat x = self.bounds.size.width/4-width/2 + (width/2+self.bounds.size.width/3)*(offsetX/ScreenWidth);
@@ -111,10 +102,6 @@ typedef  NS_ENUM(NSInteger,ButtonTag)
         _leftButton.selected = offsetX/ScreenWidth ==0 ? YES : NO;
         _rightButton.selected = !_leftButton.selected;
     }
-    
-        
-
-    
 }
 
 
