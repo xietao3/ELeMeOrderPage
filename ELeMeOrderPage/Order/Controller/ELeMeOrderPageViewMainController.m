@@ -185,6 +185,7 @@ static CGFloat const kTakeoutDetailHeaderViewHeight = 200;
             scrollView.contentOffset = CGPointMake(scrollView.contentOffset.x, _mainTableViewOldOffSet);
         }
         
+        
         // 当商家页面显示时，商家信息 tableview 偏移量不是最小状态 说明 mainTableView 已经滚动到了最大值 在商家信息 tableView 偏移量未达到最小偏移量之前  mainTableView 需要保持原来的偏移量不变
         if (self.levelListView.selectedIndex == 1 && self.subRightVC.scrollOffset != ScrollOffsetZero) {
             scrollView.contentOffset = CGPointMake(scrollView.contentOffset.x, _mainTableViewOldOffSet);

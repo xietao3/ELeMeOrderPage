@@ -82,8 +82,10 @@ typedef  NS_ENUM(NSInteger,ButtonTag)
 }
 
 - (void)clickButton:(UIButton *)sender {
+    NSInteger index = _leftButton==sender?0:1;
+    _selectedIndex = index;
     if (_segmentIndexDidChangeBlock) {
-        _segmentIndexDidChangeBlock(_leftButton==sender?0:1);
+        _segmentIndexDidChangeBlock(index);
     }
 }
 
