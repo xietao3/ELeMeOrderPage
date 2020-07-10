@@ -10,7 +10,7 @@
 #import "Header.h"
 
 @interface ELeMeOrderPageViewMainController : UIViewController
-@property (nonatomic, strong, readonly) UITableView *mainTableView;
 
 @property (nonatomic, assign) ScrollOffset scrollOffset;
+
 @end

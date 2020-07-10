@@ -21,7 +21,7 @@ static CGFloat const kTakeoutDetailHeaderViewHeight = 200;
 #import "ELeMeOrderPageRightViewController.h"
 
 #import "OrderFoodModel.h"
-@interface ELeMeOrderPageViewMainController ()<UITableViewDelegate,UITableViewDataSource,ELeMeOrderPageLevelListViewDelegate>
+@interface ELeMeOrderPageViewMainController ()<UITableViewDelegate,UITableViewDataSource>
 
 @property(nonatomic, strong)UITableView *mainTableView; // 主 tableView
 @property(nonatomic, strong)UIScrollView *subScrollView; // 添加到cell的滚动视图 实现 “点菜” “商家滑动切换”
@@ -178,14 +178,14 @@ static CGFloat const kTakeoutDetailHeaderViewHeight = 200;
             self.scrollOffset = ScrollOffsetOther;
         }
        
-        // self.subLeftVC.offsetType != OffsetTypeMin时_mainTableView不能向下滑动（注释：当点菜页面显示并且商品列表tableView未达到最大偏移量之前，mainTableView不能向下滑动 ）
+        // self.subLeftVC.scrollOffset != ScrollOffsetZero时 _mainTableView 不能向下滑动（注释：当点菜页面显示并且商品列表tableView未达到最大偏移量之前，mainTableView不能向下滑动 ）
         if ((self.levelListView.selectedIndex == 0 && self.subLeftVC.scrollOffset != ScrollOffsetZero)&&
             (self.subLeftVC.rightTVScrollDown || (scrollView.contentOffset.y - _mainTableViewOldOffSet<0))) {
             
             scrollView.contentOffset = CGPointMake(scrollView.contentOffset.x, _mainTableViewOldOffSet);
         }
         
-      // 当商家页面显示时，商家信息tableview偏移量不是最小状态 说明 mainTableView 已经滚动到了最大值 在商家信息tableview偏移量未达到最小偏移量之前  mainTableView需要保持原来的偏移量不变
+        // 当商家页面显示时，商家信息 tableview 偏移量不是最小状态 说明 mainTableView 已经滚动到了最大值 在商家信息 tableView 偏移量未达到最小偏移量之前  mainTableView 需要保持原来的偏移量不变
         if (self.levelListView.selectedIndex == 1 && self.subRightVC.scrollOffset != ScrollOffsetZero) {
             scrollView.contentOffset = CGPointMake(scrollView.contentOffset.x, _mainTableViewOldOffSet);
         }

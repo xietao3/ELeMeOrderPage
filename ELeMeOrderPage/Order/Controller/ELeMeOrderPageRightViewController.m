@@ -11,8 +11,11 @@
 #import "Header.h"
 
 #import "ELeMeOrderPageViewMainController.h"
+
 @interface ELeMeOrderPageRightViewController ()<UITableViewDelegate,UITableViewDataSource>
-@property(nonatomic, strong)LWGesturePenetrationTableView *tableView;
+
+@property(nonatomic, strong)LWGesturePenetrationTableView *storeTableView;
+
 @end
 
 @implementation ELeMeOrderPageRightViewController
@@ -24,16 +27,14 @@
 }
 
 - (void)initial {
-    _tableView = [[LWGesturePenetrationTableView alloc]initWithFrame:self.view.bounds style:UITableViewStylePlain];
-    [self.view addSubview:_tableView];
+    _storeTableView = [[LWGesturePenetrationTableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
+    [self.view addSubview:_storeTableView];
     //设置代理
-    _tableView.delegate = self;
-    _tableView.dataSource = self;
+    _storeTableView.delegate = self;
+    _storeTableView.dataSource = self;
     
-    [_tableView registerClass:[ELeMeOrderPageRightVCCommentCell class] forCellReuseIdentifier:@"commentCell"];
+    [_storeTableView registerClass:[ELeMeOrderPageRightVCCommentCell class] forCellReuseIdentifier:@"commentCell"];
 }
-
-
 
 
 

@@ -10,7 +10,8 @@
 #import "Header.h"
 #import "OrderFoodModel.h"
 @interface ELeMeOrderPageRightViewController : UIViewController
-@property (nonatomic, strong, readonly) LWGesturePenetrationTableView *tableView;
+
 @property (nonatomic, assign) ScrollOffset scrollOffset;
-@property (nonatomic, strong)OrderFoodModel *orderFoodModel;
+@property (nonatomic, strong) OrderFoodModel *orderFoodModel;
+
 @end
